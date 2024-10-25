@@ -194,3 +194,4 @@ while running:
 
 pygame.quit()
 #Birol
+#Daria_test
