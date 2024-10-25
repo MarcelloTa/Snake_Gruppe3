@@ -192,3 +192,4 @@ while running:
     clock.tick(speed)
 
 pygame.quit()
+#Birol
