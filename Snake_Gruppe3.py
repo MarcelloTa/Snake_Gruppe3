@@ -1,7 +1,7 @@
 import pygame
 import random
 import sys
-
+#Dorians push und fetch
 pygame.init()
 
 screen_width = 800
