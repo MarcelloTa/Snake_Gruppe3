@@ -1,7 +1,7 @@
 import pygame
 import random
 import sys
-#das leben ist schön
+
 
 pygame.init()
 
