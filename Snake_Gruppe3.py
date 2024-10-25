@@ -1,8 +1,7 @@
 import pygame
 import random
 import sys
-
-
+#Dorians push und fetch
 pygame.init()
 
 screen_width = 800
@@ -47,16 +46,48 @@ enemy_snakes = [
     {'body': [[600, 150], [590, 150], [580, 150]], 'direction': 'LEFT', 'color': RED}
 ]
 
+def reset_game():
+    global snake_pos, snake_body, direction, change_to, score, level, apple_pos, smoke_particles, enemy_snakes
+    snake_pos = [100, 50]
+    snake_body = [[100, 50], [90, 50], [80, 50]]
+    direction = 'RIGHT'
+    change_to = direction
+    score = 0
+    level = 1
+    apple_pos = [random.randint(0, (screen_width // snake_size) - 1) * snake_size,
+                 random.randint(0, (screen_height // snake_size) - 1) * snake_size]
+    smoke_particles = []
+    enemy_snakes = [
+        {'body': [[600, 50], [590, 50], [580, 50]], 'direction': 'LEFT', 'color': BLUE},
+        {'body': [[600, 150], [590, 150], [580, 150]], 'direction': 'LEFT', 'color': RED}]
+
 def game_over():
     font = pygame.font.SysFont('times new roman', 50)
     go_surface = font.render(f'Game Over! Score: {score}', True, RED)
     go_rect = go_surface.get_rect()
     go_rect.midtop = (screen_width / 2, screen_height / 4)
     screen.blit(go_surface, go_rect)
+
+    retry_surface = font.render('SPACE für Neustart Q zum Beenden', True, WHITE)
+    retry_rect = retry_surface.get_rect()
+    retry_rect.midtop = (screen_width / 2, screen_height / 2)
+    screen.blit(retry_surface, retry_rect)
+
     pygame.display.flip()
-    pygame.time.wait(3000)
-    pygame.quit()
-    sys.exit()
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # Restart the game
+                    reset_game()
+                    waiting = False
+                elif event.key == pygame.K_q:  # Quit the game
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
 def create_smoke(pos):
     smoke_particles.append({'pos': pos[:], 'radius': 10, 'lifespan': 20})
@@ -193,5 +224,3 @@ while running:
     clock.tick(speed)
 
 pygame.quit()
-#Birol
-#Daria_test
