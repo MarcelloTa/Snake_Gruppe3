@@ -22,6 +22,7 @@ direction = 'RIGHT'
 change_to = direction
 
 
+
 # Main logic
 while True:
     for event in pygame.event.get():
