@@ -1,73 +1,93 @@
 import pygame
-import random
 import sys
+import random
 
-pygame.init()
+# Window size
+frame_size_x = 500
+frame_size_y = 500
 
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Einfaches Snake-Spiel')
+# Initialise game window
+pygame.display.set_caption('Snake Eater')
+game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
 
-snake_size = 20
+fps_controller = pygame.time.Clock()
+
+# Game variables
 snake_pos = [100, 50]
-snake_body = [[100, 50], [90, 50], [80, 50]]
+snake_body = [[100,90], [90,50], [80,50]]
+
+food_pos = [random.randrange(1, (frame_size_x // 10)) * 10, random.randrange(1, (frame_size_y // 10)) * 10]
+food_spawn = True
 direction = 'RIGHT'
+change_to = direction
 
-apple_size = 20
-apple_pos = [random.randint(0, (screen_width // apple_size) - 1) * apple_size,
-             random.randint(0, (screen_height // apple_size) - 1) * apple_size]
 
-# Variable für das Wachstum
-wachsen = 0
-
+# Main logic
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        # Whenever a key is pressed down
+        elif event.type == pygame.KEYDOWN:
+            # W -> Up; S -> Down; A -> Left; D -> Right
+            if event.key == pygame.K_UP or event.key == ord('w'):
+                change_to = 'UP'
+            if event.key == pygame.K_DOWN or event.key == ord('s'):
+                change_to = 'DOWN'
+            if event.key == pygame.K_LEFT or event.key == ord('a'):
+                change_to = 'LEFT'
+            if event.key == pygame.K_RIGHT or event.key == ord('d'):
+                change_to = 'RIGHT'
+            # Esc -> Create event to quit the game
+            if event.key == pygame.K_ESCAPE:
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_RIGHT]:
-        direction = 'RIGHT'
-    elif keys[pygame.K_LEFT]:
-        direction = 'LEFT'
-    elif keys[pygame.K_DOWN]:
-        direction = 'DOWN'
-    elif keys[pygame.K_UP]:
+    # Making sure the snake cannot move in the opposite direction instantaneously
+    if change_to == 'UP' and direction != 'DOWN':
         direction = 'UP'
+    if change_to == 'DOWN' and direction != 'UP':
+        direction = 'DOWN'
+    if change_to == 'LEFT' and direction != 'RIGHT':
+        direction = 'LEFT'
+    if change_to == 'RIGHT' and direction != 'LEFT':
+        direction = 'RIGHT'
 
-    # Snake bewegen
+    # Moving the snake
+    if direction == 'UP':
+        snake_pos[1] -= 10
+    if direction == 'DOWN':
+        snake_pos[1] += 10
+    if direction == 'LEFT':
+        snake_pos[0] -= 10
     if direction == 'RIGHT':
-        snake_pos[0] += snake_size
-    elif direction == 'LEFT':
-        snake_pos[0] -= snake_size
-    elif direction == 'DOWN':
-        snake_pos[1] += snake_size
-    elif direction == 'UP':
-        snake_pos[1] -= snake_size
+        snake_pos[0] += 10
 
-    # Snake-Körper aktualisieren
+    # Snake body growing mechanism
     snake_body.insert(0, list(snake_pos))
-
-    # Überprüfen, ob die Snake einen Apfel gesammelt hat
-    if snake_pos == apple_pos:
-        wachsen += 1
-
-        apple_pos = [random.randint(0, (screen_width // apple_size) - 1) * apple_size,
-                     random.randint(0, (screen_height // apple_size) - 1) * apple_size]
+    if snake_pos[0] == food_pos[0] and snake_pos[1] == food_pos[1]:
+        food_spawn = False
     else:
-        # Letztes Segment entfernen, wenn kein Wachstum
         snake_body.pop()
 
-    # Snake zeichnen
-    screen.fill((0, 0, 0))
+    # Spawning food on the screen
+    if not food_spawn:
+        food_pos = [random.randrange(0, (frame_size_x // 10)) * 10, random.randrange(0, (frame_size_y // 10)) * 10]
+    food_spawn = True
+
+    game_window.fill((0, 0, 0))
     for pos in snake_body:
-        pygame.draw.rect(screen, (0, 255, 0), pygame.Rect(pos[0], pos[1], snake_size, snake_size))
+        pygame.draw.rect(game_window, (0, 255, 0), pygame.Rect(pos[0], pos[1], 10, 10))
 
-    # Apfel zeichnen
-    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(apple_pos[0], apple_pos[1], apple_size, apple_size))
+    # Snake food
+    pygame.draw.rect(game_window, (255, 0, 0), pygame.Rect(food_pos[0], food_pos[1], 10, 10))
 
-    pygame.display.flip()
-    pygame.time.delay(100)
+    # body touch
+    if snake_pos in snake_body[1:]:
+        sys.exit()
+
+
+    pygame.display.update()
+    fps_controller.tick(15)
+
+
