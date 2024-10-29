@@ -10,6 +10,10 @@ frame_size_y = 500
 pygame.display.set_caption('Snake Eater')
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
 
+# Initialize Pygame font
+pygame.font.init()
+font = pygame.font.Font(None, 28)
+
 fps_controller = pygame.time.Clock()
 
 # Game variables
@@ -21,7 +25,7 @@ food_spawn = True
 direction = 'RIGHT'
 change_to = direction
 
-
+score = 0
 
 # Main logic
 while True:
@@ -29,9 +33,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        # Whenever a key is pressed down
         elif event.type == pygame.KEYDOWN:
-            # W -> Up; S -> Down; A -> Left; D -> Right
             if event.key == pygame.K_UP or event.key == ord('w'):
                 change_to = 'UP'
             if event.key == pygame.K_DOWN or event.key == ord('s'):
@@ -40,11 +42,10 @@ while True:
                 change_to = 'LEFT'
             if event.key == pygame.K_RIGHT or event.key == ord('d'):
                 change_to = 'RIGHT'
-            # Esc -> Create event to quit the game
             if event.key == pygame.K_ESCAPE:
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-    # Making sure the snake cannot move in the opposite direction instantaneously
+    # snake kann nicht gegengesetzte richtung laufen
     if change_to == 'UP' and direction != 'DOWN':
         direction = 'UP'
     if change_to == 'DOWN' and direction != 'UP':
@@ -68,6 +69,7 @@ while True:
     snake_body.insert(0, list(snake_pos))
     if snake_pos[0] == food_pos[0] and snake_pos[1] == food_pos[1]:
         food_spawn = False
+        score += 10
     else:
         snake_body.pop()
 
@@ -80,15 +82,15 @@ while True:
     for pos in snake_body:
         pygame.draw.rect(game_window, (0, 255, 0), pygame.Rect(pos[0], pos[1], 10, 10))
 
-    # Snake food
-    pygame.draw.rect(game_window, (255, 0, 0), pygame.Rect(food_pos[0], food_pos[1], 10, 10))
-
-    # body touch
     if snake_pos in snake_body[1:]:
         sys.exit()
 
+    # Snake food
+    pygame.draw.rect(game_window, (255, 0, 0), pygame.Rect(food_pos[0], food_pos[1], 10, 10))
+
+    # Render the score
+    score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+    game_window.blit(score_text, (10, 10))
 
     pygame.display.update()
     fps_controller.tick(15)
-
-
