@@ -2,6 +2,8 @@ import pygame
 import sys
 import random
 
+
+
 # Window size
 frame_size_x = 500
 frame_size_y = 500
@@ -17,8 +19,8 @@ font = pygame.font.Font(None, 28)
 fps_controller = pygame.time.Clock()
 
 # Game variables
-snake_pos = [100, 50]
-snake_body = [[100,90], [90,50], [80,50]]
+snake_pos = [100, 50]  #Schlangenkopf startet an Pos 100,50
+snake_body = [[100,90], [90,50], [80,50]] # Schlangenkörper entsprechend hinter dem Kopf 3 bodys "Körperteile"
 
 food_pos = [random.randrange(1, (frame_size_x // 10)) * 10, random.randrange(1, (frame_size_y // 10)) * 10]
 food_spawn = True
@@ -78,17 +80,42 @@ while True:
         food_pos = [random.randrange(0, (frame_size_x // 10)) * 10, random.randrange(0, (frame_size_y // 10)) * 10]
     food_spawn = True
 
+    #schwarzen Bildschirm auffüllen, damit wir nicht nur einen grünen Strich zeichnen
     game_window.fill((0, 0, 0))
     for pos in snake_body:
         pygame.draw.rect(game_window, (0, 255, 0), pygame.Rect(pos[0], pos[1], 10, 10))
 
+    #Schlange stirbt beim an sich selber naschen
     if snake_pos in snake_body[1:]:
         sys.exit()
+
+
+    # Zeig mir meine Grenzen ich zeig dir deine.
+    # Schlange stirbt bei Kontakt mit Rand
+
+    #schlange geht nach links = tot
+    if snake_pos[0] < 0:
+        pygame.quit()
+        sys.exit()
+    #schlange  geht nach rechts = tot
+    if snake_pos[0] >= frame_size_x:
+        pygame.quit()                       #snake_pos[0] = x- koordinate, snake_pos[1] = y - koordinate
+        sys.exit()
+    # Schlange geht nach oben = tot
+    if snake_pos[1] < 0:
+        pygame.quit()
+        sys.exit()
+    # Schlange geht nach unten = tot
+    if snake_pos[1] >= frame_size_y:
+        pygame.quit()
+        sys.exit()
+
+
 
     # Snake food
     pygame.draw.rect(game_window, (255, 0, 0), pygame.Rect(food_pos[0], food_pos[1], 10, 10))
 
-    # Render the score
+    # Score Anzeigelabel
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     game_window.blit(score_text, (10, 10))
 
