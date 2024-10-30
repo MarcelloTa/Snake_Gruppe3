@@ -29,6 +29,7 @@ change_to = direction
 
 score = 0
 
+
 # Main logic
 while True:
     for event in pygame.event.get():
@@ -47,7 +48,7 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-    # snake kann nicht gegengesetzte richtung laufen
+    # snake kann nicht in gegengesetzte Richtung laufen
     if change_to == 'UP' and direction != 'DOWN':
         direction = 'UP'
     if change_to == 'DOWN' and direction != 'UP':
